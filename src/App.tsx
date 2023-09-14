@@ -9,6 +9,7 @@ import {
   onIncrement,
   onDecrement,
   setNoteInItem,
+  getVoucher,
 } from "@/stores/food/foodSlice";
 
 import {
@@ -50,7 +51,7 @@ const App = () => {
 
   const handleOrderFood = () => {
     const payload = {
-      nominal_diskon: 0,
+      nominal_diskon: cart.totalVoucher,
       nominal_pesanan: cart.totalOrder,
       items: cart.items.map((item) => {
         return {
@@ -62,6 +63,10 @@ const App = () => {
     };
 
     dispatch(orderFood(payload));
+  };
+
+  const handleGetVoucher = (code: string) => {
+    dispatch(getVoucher(code));
   };
 
   useEffect(() => {
@@ -139,6 +144,7 @@ const App = () => {
               type="text"
               placeholder="Masukkan vouchermu disini.."
               className={cn("mt-1")}
+              onChange={({ target }) => handleGetVoucher(target.value)}
             />
           </div>
 

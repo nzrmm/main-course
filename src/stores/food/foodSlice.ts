@@ -60,43 +60,63 @@ export const orderFood = createAsyncThunk(
   }
 );
 
+export const getVoucher = createAsyncThunk(
+  "food/voucher",
+  async (code: string) => {
+    const response = await axios.get(
+      `https://tes-mobile.landa.id/api/vouchers?kode=${code}`
+    );
+    return response.data;
+  }
+);
+
 const foodSlice = createSlice({
   name: "food",
   initialState,
   extraReducers: (builder) => {
     builder.addCase(getListFood.pending, (state) => {
       state.foods.isLoading = true;
-    }),
-      builder.addCase(getListFood.fulfilled, (state, { payload }) => {
-        state.foods.isLoading = false;
-        state.foods.isSuccess = true;
-        state.foods.isError = false;
-        state.foods.errorMessage = "";
-        state.foods.data = payload?.datas || [];
-      }),
-      builder.addCase(getListFood.rejected, (state, { error }) => {
-        state.foods.isLoading = false;
-        state.foods.isSuccess = false;
-        state.foods.isError = true;
-        state.foods.errorMessage = error.message || "";
-        state.foods.data = [];
-      });
+    });
+    builder.addCase(getListFood.fulfilled, (state, { payload }) => {
+      state.foods.isLoading = false;
+      state.foods.isSuccess = true;
+      state.foods.isError = false;
+      state.foods.errorMessage = "";
+      state.foods.data = payload?.datas || [];
+    });
+    builder.addCase(getListFood.rejected, (state, { error }) => {
+      state.foods.isLoading = false;
+      state.foods.isSuccess = false;
+      state.foods.isError = true;
+      state.foods.errorMessage = error.message || "";
+      state.foods.data = [];
+    });
 
     builder.addCase(orderFood.pending, (state) => {
       state.order.isLoading = true;
-    }),
-      builder.addCase(orderFood.fulfilled, (state) => {
-        state.order.isLoading = false;
-        state.order.isSuccess = true;
-        state.order.isError = false;
-        state.order.errorMessage = "";
-      }),
-      builder.addCase(orderFood.rejected, (state, { error }) => {
-        state.order.isLoading = false;
-        state.order.isSuccess = false;
-        state.order.isError = true;
-        state.order.errorMessage = error.message || "";
-      });
+    });
+    builder.addCase(orderFood.fulfilled, (state) => {
+      state.order.isLoading = false;
+      state.order.isSuccess = true;
+      state.order.isError = false;
+      state.order.errorMessage = "";
+    });
+    builder.addCase(orderFood.rejected, (state, { error }) => {
+      state.order.isLoading = false;
+      state.order.isSuccess = false;
+      state.order.isError = true;
+      state.order.errorMessage = error.message || "";
+    });
+
+    builder.addCase(getVoucher.fulfilled, (state, { payload }) => {
+      state.cart.totalVoucher = payload?.datas?.nominal || 0;
+
+      if (state.cart.totalOrder > payload?.datas?.nominal) {
+        state.cart.totalOrder -= payload?.datas?.nominal || 0;
+      } else if (state.cart.totalOrder < payload?.datas?.nominal) {
+        state.cart.totalOrder = 0;
+      }
+    });
   },
   reducers: {
     addToCart: (state, { payload }) => {
