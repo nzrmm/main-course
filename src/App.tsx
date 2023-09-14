@@ -1,9 +1,26 @@
+import { useEffect } from "react";
 import { BsFillCartFill } from "react-icons/bs";
 
+import { useAppDispatch, useAppSelector } from "@/stores/hooks";
+import { getListFood } from "@/stores/food/foodSlice";
 import { Button, FoodCart } from "@/components";
 import { cn } from "@/utils/style";
+import { IFoodType } from "@/types/food";
 
 const App = () => {
+  const dispatch = useAppDispatch();
+  const { foods } = useAppSelector((state) => state.food);
+
+  const handleGetListFood = () => {
+    dispatch(getListFood());
+  };
+
+  useEffect(() => {
+    handleGetListFood();
+  }, []);
+
+  console.log(foods);
+
   return (
     <div className={"antialiased min-h-screen bg-neutral-200 p-8"}>
       <div className={cn("flex justify-between items-center mb-8")}>
@@ -31,7 +48,9 @@ const App = () => {
       </div>
 
       <div className={cn("grid grid-cols-6 gap-x-4 gap-y-6")}>
-        <FoodCart />
+        {foods?.data?.map((food: IFoodType) => (
+          <FoodCart key={food?.id} {...food} />
+        ))}
       </div>
     </div>
   );
