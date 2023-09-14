@@ -25,6 +25,7 @@ import { IFoodType } from "@/types/food";
 
 const App = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [voucherCode, setVoucherCode] = useState("");
 
   const dispatch = useAppDispatch();
   const { foods, cart, order } = useAppSelector((state) => state.food);
@@ -144,7 +145,13 @@ const App = () => {
               type="text"
               placeholder="Masukkan vouchermu disini.."
               className={cn("mt-1")}
-              onChange={({ target }) => handleGetVoucher(target.value)}
+              value={voucherCode}
+              onChange={({ target }) => setVoucherCode(target.value)}
+              onKeyDown={({ key }) => {
+                if (key === "Enter") {
+                  handleGetVoucher(voucherCode);
+                }
+              }}
             />
           </div>
 
