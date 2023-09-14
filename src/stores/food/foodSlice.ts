@@ -1,5 +1,10 @@
 import axios from "axios";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import {
+  ICartItemType,
+  IFoodRequestType,
+  IFoodResponseType,
+} from "@/types/food";
 
 type IInitialStateType = {
   foods: {
@@ -7,10 +12,10 @@ type IInitialStateType = {
     isError: boolean;
     isSuccess: boolean;
     errorMessage: string;
-    data: [];
+    data: IFoodResponseType[];
   };
   cart: {
-    items: any[];
+    items: ICartItemType[];
     totalVoucher: number;
     totalOrder: number;
   };
@@ -50,7 +55,7 @@ export const getListFood = createAsyncThunk("food/getList", async () => {
 
 export const orderFood = createAsyncThunk(
   "food/orderFood",
-  async (data: any) => {
+  async (data: IFoodRequestType) => {
     const response = await axios.post(
       "https://tes-mobile.landa.id/api/order",
       data
@@ -61,7 +66,7 @@ export const orderFood = createAsyncThunk(
 );
 
 export const getVoucher = createAsyncThunk(
-  "food/voucher",
+  "food/getVoucher",
   async (code: string) => {
     const response = await axios.get(
       `https://tes-mobile.landa.id/api/vouchers?kode=${code}`
@@ -74,6 +79,7 @@ const foodSlice = createSlice({
   name: "food",
   initialState,
   extraReducers: (builder) => {
+    // GET: List food
     builder.addCase(getListFood.pending, (state) => {
       state.foods.isLoading = true;
     });
@@ -92,6 +98,7 @@ const foodSlice = createSlice({
       state.foods.data = [];
     });
 
+    // POST: Order food
     builder.addCase(orderFood.pending, (state) => {
       state.order.isLoading = true;
     });
@@ -108,6 +115,7 @@ const foodSlice = createSlice({
       state.order.errorMessage = error.message || "";
     });
 
+    // GET: Get Voucher
     builder.addCase(getVoucher.fulfilled, (state, { payload }) => {
       state.cart.totalVoucher = payload?.datas?.nominal || 0;
 

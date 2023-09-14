@@ -1,13 +1,14 @@
+import { ChangeEvent } from "react";
+
 import { Counter, TextInput } from "@/components";
 import { cn } from "@/utils/style";
-import { IFoodType } from "@/types/food";
+import { ICartItemType } from "@/types/food";
 
 type IFoodCardProps = {
-  totalItem: number;
   onIncrement: () => void;
   onDecrement: () => void;
-  onChangeNote: (event: any) => void;
-} & IFoodType;
+  onChangeNote: (event: ChangeEvent<HTMLInputElement>) => void;
+} & ICartItemType;
 
 const FoodSmallCard = ({ nama, harga, gambar, ...props }: IFoodCardProps) => {
   return (

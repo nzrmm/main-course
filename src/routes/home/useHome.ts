@@ -10,7 +10,7 @@ import {
   getVoucher,
 } from "@/stores/food/foodSlice";
 
-import { IFoodType } from "@/types/food";
+import { IFoodResponseType } from "@/types/food";
 
 const useHome = () => {
   const dispatch = useAppDispatch();
@@ -20,7 +20,7 @@ const useHome = () => {
     dispatch(getListFood());
   };
 
-  const handleAddToCart = (value: IFoodType) => {
+  const handleAddToCart = (value: IFoodResponseType) => {
     dispatch(addToCart(value));
   };
 

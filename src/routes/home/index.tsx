@@ -10,9 +10,8 @@ import {
 } from "@/components";
 
 import { cn } from "@/utils/style";
-import { IFoodType } from "@/types/food";
-
 import useHome from "@/routes/home/useHome";
+import { IFoodResponseType } from "@/types/food";
 
 const Home = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -36,7 +35,7 @@ const Home = () => {
   }, []);
 
   return (
-    <div>
+    <>
       <div className={cn("flex justify-between items-center mb-8")}>
         <p className={cn("text-lg font-semibold")}>Main Course</p>
         <div className={cn("relative")}>
@@ -57,13 +56,13 @@ const Home = () => {
               "w-5 h-5 text-xs bg-rose-500 text-white rounded-full"
             )}
           >
-            {cart?.items?.length || 0}
+            {cart.items.length}
           </div>
         </div>
       </div>
 
       <div className={cn("grid grid-cols-6 gap-x-4 gap-y-6")}>
-        {foods?.data?.map((food: IFoodType) => (
+        {foods?.data?.map((food: IFoodResponseType) => (
           <FoodCart
             key={food?.id}
             onAddToCart={() => handleAddToCart(food)}
@@ -82,12 +81,12 @@ const Home = () => {
             {cart.items.map((item: any) => (
               <FoodSmallCard
                 key={item?.id}
-                {...item}
+                onIncrement={() => handleOnIncrement(item.id)}
+                onDecrement={() => handleOnDecrement(item.id)}
                 onChangeNote={({ target }) =>
                   handleSetNoteInItem(item.id, target.value)
                 }
-                onIncrement={() => handleOnIncrement(item.id)}
-                onDecrement={() => handleOnDecrement(item.id)}
+                {...item}
               />
             ))}
           </div>
@@ -130,7 +129,7 @@ const Home = () => {
             </div>
 
             <Button
-              id={`order-button`}
+              id={"order-button"}
               size="sm"
               onClick={() => handleOrderFood()}
             >
@@ -139,7 +138,7 @@ const Home = () => {
           </div>
         </div>
       </Modal>
-    </div>
+    </>
   );
 };
 
