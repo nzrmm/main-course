@@ -3,7 +3,11 @@ import { cn } from "@/utils/style";
 
 import { IFoodType } from "@/types/food";
 
-const FoodCard = ({ nama, harga, gambar }: IFoodType) => {
+type IFoodCardProps = {
+  onAddToCart: () => void;
+} & IFoodType;
+
+const FoodCard = ({ nama, harga, gambar, onAddToCart }: IFoodCardProps) => {
   return (
     <div className={cn("w-full bg-white rounded-md p-4")}>
       <img
@@ -21,6 +25,7 @@ const FoodCard = ({ nama, harga, gambar }: IFoodType) => {
           id={`add-to-cart-button`}
           size="sm"
           className={cn("flex items-center gap-1")}
+          onClick={() => onAddToCart()}
         >
           + Tambahkan ke Keranjang
         </Button>

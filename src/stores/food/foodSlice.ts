@@ -1,7 +1,28 @@
 import axios from "axios";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
-const initialState = {
+type IInitialStateType = {
+  foods: {
+    isLoading: boolean;
+    isError: boolean;
+    isSuccess: boolean;
+    errorMessage: string;
+    data: [];
+  };
+  cart: {
+    items: any[];
+    totalVoucher: number;
+    totalOrder: number;
+  };
+  order: {
+    isLoading: boolean;
+    isError: boolean;
+    isSuccess: boolean;
+    errorMessage: string;
+  };
+};
+
+const initialState: IInitialStateType = {
   foods: {
     isLoading: false,
     isError: false,
@@ -9,12 +30,35 @@ const initialState = {
     errorMessage: "",
     data: [],
   },
+  cart: {
+    items: [],
+    totalVoucher: 0,
+    totalOrder: 0,
+  },
+  order: {
+    isLoading: false,
+    isError: false,
+    isSuccess: false,
+    errorMessage: "",
+  },
 };
 
 export const getListFood = createAsyncThunk("food/getList", async () => {
   const response = await axios.get("https://tes-mobile.landa.id/api/menus");
   return response.data;
 });
+
+export const orderFood = createAsyncThunk(
+  "food/orderFood",
+  async (data: any) => {
+    const response = await axios.post(
+      "https://tes-mobile.landa.id/api/order",
+      data
+    );
+
+    return response;
+  }
+);
 
 const foodSlice = createSlice({
   name: "food",
@@ -37,8 +81,73 @@ const foodSlice = createSlice({
         state.foods.errorMessage = error.message || "";
         state.foods.data = [];
       });
+
+    builder.addCase(orderFood.pending, (state) => {
+      state.order.isLoading = true;
+    }),
+      builder.addCase(orderFood.fulfilled, (state) => {
+        state.order.isLoading = false;
+        state.order.isSuccess = true;
+        state.order.isError = false;
+        state.order.errorMessage = "";
+      }),
+      builder.addCase(orderFood.rejected, (state, { error }) => {
+        state.order.isLoading = false;
+        state.order.isSuccess = false;
+        state.order.isError = true;
+        state.order.errorMessage = error.message || "";
+      });
   },
-  reducers: {},
+  reducers: {
+    addToCart: (state, { payload }) => {
+      const data = {
+        ...payload,
+        note: "",
+        totalItem: 1,
+      };
+
+      state.cart.items.push(data);
+      state.cart.totalOrder = state.cart.items.reduce(
+        (acc, curValue) => acc + curValue.harga * curValue.totalItem,
+        0
+      );
+    },
+    setNoteInItem: (state, { payload }) => {
+      const itemIndex = state.cart.items.findIndex(
+        (cartItem) => cartItem?.id === payload.id
+      );
+
+      state.cart.items[itemIndex].note = payload.value;
+    },
+    onIncrement: (state, { payload }) => {
+      const itemIndex = state.cart.items.findIndex(
+        (cartItem) => cartItem?.id === payload.id
+      );
+
+      state.cart.items[itemIndex].totalItem += 1;
+      state.cart.totalOrder = state.cart.items.reduce(
+        (acc, curValue) => acc + curValue.harga * curValue.totalItem,
+        0
+      );
+    },
+    onDecrement: (state, { payload }) => {
+      const itemIndex = state.cart.items.findIndex(
+        (cartItem) => cartItem?.id === payload.id
+      );
+
+      if (state.cart.items[itemIndex].totalItem > 1) {
+        state.cart.items[itemIndex].totalItem -= 1;
+
+        state.cart.totalOrder = state.cart.items.reduce(
+          (acc, curValue) => acc + curValue.harga * curValue.totalItem,
+          0
+        );
+      }
+    },
+  },
 });
 
 export default foodSlice.reducer;
+
+export const { addToCart, setNoteInItem, onIncrement, onDecrement } =
+  foodSlice.actions;

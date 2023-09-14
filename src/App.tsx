@@ -2,7 +2,15 @@ import { useState, useEffect } from "react";
 import { BsFillCartFill } from "react-icons/bs";
 
 import { useAppDispatch, useAppSelector } from "@/stores/hooks";
-import { getListFood } from "@/stores/food/foodSlice";
+import {
+  addToCart,
+  orderFood,
+  getListFood,
+  onIncrement,
+  onDecrement,
+  setNoteInItem,
+} from "@/stores/food/foodSlice";
+
 import {
   Button,
   FoodCart,
@@ -10,17 +18,50 @@ import {
   TextInput,
   FoodSmallCard,
 } from "@/components";
+
 import { cn } from "@/utils/style";
 import { IFoodType } from "@/types/food";
 
 const App = () => {
-  const dispatch = useAppDispatch();
-  const { foods } = useAppSelector((state) => state.food);
-
   const [isOpen, setIsOpen] = useState(false);
+
+  const dispatch = useAppDispatch();
+  const { foods, cart, order } = useAppSelector((state) => state.food);
 
   const handleGetListFood = () => {
     dispatch(getListFood());
+  };
+
+  const handleAddToCart = (value: IFoodType) => {
+    dispatch(addToCart(value));
+  };
+
+  const handleSetNoteInItem = (id: string, value: string) => {
+    dispatch(setNoteInItem({ id, value }));
+  };
+
+  const handleOnIncrement = (id: string) => {
+    dispatch(onIncrement({ id }));
+  };
+
+  const handleOnDecrement = (id: string) => {
+    dispatch(onDecrement({ id }));
+  };
+
+  const handleOrderFood = () => {
+    const payload = {
+      nominal_diskon: 0,
+      nominal_pesanan: cart.totalOrder,
+      items: cart.items.map((item) => {
+        return {
+          id: item.id,
+          harga: item.harga,
+          catatan: item.note || "-",
+        };
+      }),
+    };
+
+    dispatch(orderFood(payload));
   };
 
   useEffect(() => {
@@ -49,14 +90,18 @@ const App = () => {
               "w-5 h-5 text-xs bg-rose-500 text-white rounded-full"
             )}
           >
-            1
+            {cart?.items?.length || 0}
           </div>
         </div>
       </div>
 
       <div className={cn("grid grid-cols-6 gap-x-4 gap-y-6")}>
         {foods?.data?.map((food: IFoodType) => (
-          <FoodCart key={food?.id} {...food} />
+          <FoodCart
+            key={food?.id}
+            onAddToCart={() => handleAddToCart(food)}
+            {...food}
+          />
         ))}
       </div>
 
@@ -67,10 +112,17 @@ const App = () => {
       >
         <div className={cn("flex flex-col overflow-auto")}>
           <div className={cn("flex flex-col gap-4")}>
-            <FoodSmallCard />
-            <FoodSmallCard />
-            <FoodSmallCard />
-            <FoodSmallCard />
+            {cart.items.map((item: any) => (
+              <FoodSmallCard
+                key={item?.id}
+                {...item}
+                onChangeNote={({ target }) =>
+                  handleSetNoteInItem(item.id, target.value)
+                }
+                onIncrement={() => handleOnIncrement(item.id)}
+                onDecrement={() => handleOnDecrement(item.id)}
+              />
+            ))}
           </div>
 
           <hr className={cn("my-8")} />
@@ -100,11 +152,15 @@ const App = () => {
               )}
             >
               <p>Total</p>
-              <p>30000</p>
+              <p>{cart.totalOrder}</p>
             </div>
 
-            <Button id={`order-button`} size="sm" onClick={() => {}}>
-              Buat Pesanan
+            <Button
+              id={`order-button`}
+              size="sm"
+              onClick={() => handleOrderFood()}
+            >
+              {order.isLoading ? "Loading..." : "Buat Pesanan"}
             </Button>
           </div>
         </div>

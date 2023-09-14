@@ -4,4 +4,5 @@ export type IFoodType = {
   harga: number;
   tipe: string;
   gambar: string;
+  note?: string;
 };

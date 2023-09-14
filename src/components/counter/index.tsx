@@ -14,7 +14,7 @@ const Counter = ({ counter, onIncrement, onDecrement }: ICounterProps) => {
           "w-5 h-5 bg-teal-500 rounded-sm text-white",
           "flex items-center justify-center"
         )}
-        onClick={onIncrement}
+        onClick={onDecrement}
       >
         -
       </div>
@@ -24,7 +24,7 @@ const Counter = ({ counter, onIncrement, onDecrement }: ICounterProps) => {
           "w-5 h-5 bg-teal-500 rounded-sm text-white",
           "flex items-center justify-center"
         )}
-        onClick={onDecrement}
+        onClick={onIncrement}
       >
         +
       </div>
