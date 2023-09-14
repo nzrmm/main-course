@@ -1,12 +1,12 @@
 import { BsFillCartFill } from "react-icons/bs";
 
-import { Button } from "@/components";
+import { Button, FoodCart } from "@/components";
 import { cn } from "@/utils/style";
 
 const App = () => {
   return (
-    <div className={"min-h-screen bg-neutral-200 p-8"}>
-      <div className={cn("flex justify-between items-center")}>
+    <div className={"antialiased min-h-screen bg-neutral-200 p-8"}>
+      <div className={cn("flex justify-between items-center mb-8")}>
         <p className={cn("text-lg font-semibold")}>Main Course</p>
         <div className={cn("relative")}>
           <Button
@@ -15,7 +15,7 @@ const App = () => {
             variant="outline"
             className={cn("flex items-center gap-2")}
           >
-            <BsFillCartFill color={"#3b82f6"} />
+            <BsFillCartFill color={"#14b8a6"} />
             Keranjang
           </Button>
 
@@ -28,6 +28,10 @@ const App = () => {
             1
           </div>
         </div>
+      </div>
+
+      <div className={cn("grid grid-cols-6 gap-x-4 gap-y-6")}>
+        <FoodCart />
       </div>
     </div>
   );
